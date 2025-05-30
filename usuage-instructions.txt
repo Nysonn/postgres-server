@@ -1,0 +1,258 @@
+# MCP Server Usage Instructions
+
+## Overview
+This MCP (Model Context Protocol) server is a RESTful API service that allows you to register data models and perform queries on them. It runs on port 8080 and can be accessed from any HTTP client or programming language.
+
+## Prerequisites
+- Go programming language installed
+- Database connection configured
+- Server source code available
+
+## Getting Started
+
+### Step 1: Start the Server
+First, ensure the MCP server is running on your local machine:
+
+```bash
+go run cmd/server/main.go
+```
+
+The server will start on `http://localhost:8080`
+
+### Step 2: Generate Authentication Token
+For admin operations (like registering models), you need a JWT token:
+
+```bash
+go run cmd/token/main.go
+```
+
+This command will output a JWT token that looks like:
+```
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Important**: Save this token as you'll need it for admin operations.
+
+## API Endpoints
+
+### Admin Endpoints (Require JWT Token)
+- **Register Model**: `POST /admin/models/register`
+- **Other Admin Operations**: Various admin endpoints
+
+### Public Endpoints
+- **Query Models**: `POST /query`
+
+## Testing Methods
+
+### Method 1: Using cURL (Command Line)
+
+#### Register a Model
+```bash
+curl -X POST http://localhost:8080/admin/models/register \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "products",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "price": {"type": "number"}
+      }
+    }
+  }'
+```
+
+#### Query Models
+```bash
+curl -X POST http://localhost:8080/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "items",
+    "queryText": "test",
+    "fields": ["name"],
+    "maxResults": 10
+  }'
+```
+
+### Method 2: Using Postman
+
+1. **Create a new request**
+2. **Set the request type** to POST
+3. **Set the URL**:
+   - For registering models: `http://localhost:8080/admin/models/register`
+   - For querying: `http://localhost:8080/query`
+4. **Add headers**:
+   - `Content-Type: application/json`
+   - `Authorization: Bearer YOUR_JWT_TOKEN` (only for admin endpoints)
+5. **Add request body** in JSON format (see examples above)
+6. **Send the request**
+
+### Method 3: Using Python
+
+```python
+import requests
+
+# Your JWT token (replace with actual token)
+token = "Bearer YOUR_JWT_TOKEN"
+
+# Register a model
+def register_model():
+    response = requests.post(
+        "http://localhost:8080/admin/models/register",
+        headers={
+            "Authorization": token,
+            "Content-Type": "application/json"
+        },
+        json={
+            "name": "products",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "price": {"type": "number"}
+                }
+            }
+        }
+    )
+    return response.json()
+
+# Query models
+def query_models():
+    response = requests.post(
+        "http://localhost:8080/query",
+        headers={"Content-Type": "application/json"},
+        json={
+            "model": "items",
+            "queryText": "test",
+            "fields": ["name"],
+            "maxResults": 10
+        }
+    )
+    return response.json()
+
+# Execute functions
+print("Registering model:", register_model())
+print("Querying models:", query_models())
+```
+
+### Method 4: Using JavaScript/Node.js
+
+```javascript
+// Your JWT token (replace with actual token)
+const token = "Bearer YOUR_JWT_TOKEN";
+
+// Register a model
+async function registerModel() {
+    try {
+        const response = await fetch("http://localhost:8080/admin/models/register", {
+            method: "POST",
+            headers: {
+                "Authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: "products",
+                schema: {
+                    type: "object",
+                    properties: {
+                        name: { type: "string" },
+                        price: { type: "number" }
+                    }
+                }
+            })
+        });
+        
+        const data = await response.json();
+        console.log("Model registered:", data);
+        return data;
+    } catch (error) {
+        console.error("Error registering model:", error);
+    }
+}
+
+// Query models
+async function queryModels() {
+    try {
+        const response = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "items",
+                queryText: "test",
+                fields: ["name"],
+                maxResults: 10
+            })
+        });
+        
+        const data = await response.json();
+        console.log("Query results:", data);
+        return data;
+    } catch (error) {
+        console.error("Error querying models:", error);
+    }
+}
+
+// Execute functions
+registerModel();
+queryModels();
+```
+
+## Request/Response Examples
+
+### Model Registration Request
+```json
+{
+    "name": "products",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string"},
+            "price": {"type": "number"},
+            "category": {"type": "string"}
+        }
+    }
+}
+```
+
+### Query Request
+```json
+{
+    "model": "products",
+    "queryText": "laptop",
+    "fields": ["name", "price"],
+    "maxResults": 5
+}
+```
+
+## Important Security Notes
+
+1. **Keep your JWT token secure** - Don't share it publicly or commit it to version control
+2. **Token authentication** is required only for admin endpoints
+3. **Server accessibility** - Ensure the server is running and accessible from your testing environment
+4. **Database connection** - Verify that the server has a valid database connection
+
+## Troubleshooting
+
+### Common Issues
+- **Server not responding**: Ensure the server is running on localhost:8080
+- **Authentication errors**: Verify your JWT token is correct and properly formatted
+- **Connection refused**: Check if the server process is active
+- **Invalid JSON**: Validate your request body format
+
+### Verification Steps
+1. Check if server is running: `curl http://localhost:8080/health` (if health endpoint exists)
+2. Verify token format: Ensure it starts with "Bearer "
+3. Test with simple requests first before complex operations
+
+## Next Steps
+
+Once you've successfully tested the basic operations, you can:
+- Integrate the MCP server into your applications
+- Build custom clients for your specific use cases
+- Extend the server with additional endpoints as needed
+- Implement more complex query operations
+
+For additional programming languages or specific integration questions, refer to the respective language's HTTP client documentation.
