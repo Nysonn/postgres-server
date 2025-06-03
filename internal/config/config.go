@@ -21,7 +21,7 @@ func Load() (*Config, error) {
 	// SERVER_ADDRESS is optional—default to ":8080" if unset.
 	addr := os.Getenv("SERVER_ADDRESS")
 	if addr == "" {
-		addr = ":8080"
+		addr = ":5000"
 	}
 
 	return &Config{

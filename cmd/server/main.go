@@ -65,6 +65,9 @@ func main() {
 	// Public query endpoint
 	mux.HandleFunc("/query", handler.MakeQueryHandler(sqlDB, allowed))
 
+	// Assuming you named your migrate.Migrate instance `m`
+	mux.HandleFunc("/migrations/status", handler.MakeMigrationsStatusHandler(m))
+
 	// Admin sub-router (protected by JWT)
 	adminMux := http.NewServeMux()
 	adminMux.Handle("/admin/models/register",
