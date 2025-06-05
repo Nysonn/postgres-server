@@ -17,7 +17,7 @@ First, ensure the MCP server is running on your local machine:
 go run cmd/server/main.go
 ```
 
-The server will start on `http://localhost:8080`
+The server will start on `http://localhost:5000`
 
 ### Step 2: Generate Authentication Token
 For admin operations (like registering models), you need a JWT token:
@@ -48,7 +48,7 @@ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 #### Register a Model
 ```bash
-curl -X POST http://localhost:8080/admin/models/register \
+curl -X POST http://localhost:5000/admin/models/register \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -65,7 +65,7 @@ curl -X POST http://localhost:8080/admin/models/register \
 
 #### Query Models
 ```bash
-curl -X POST http://localhost:8080/query \
+curl -X POST http://localhost:5000/query \
   -H "Content-Type: application/json" \
   -d '{
     "model": "items",
@@ -80,8 +80,8 @@ curl -X POST http://localhost:8080/query \
 1. **Create a new request**
 2. **Set the request type** to POST
 3. **Set the URL**:
-   - For registering models: `http://localhost:8080/admin/models/register`
-   - For querying: `http://localhost:8080/query`
+   - For registering models: `http://localhost:5000/admin/models/register`
+   - For querying: `http://localhost:5000/query`
 4. **Add headers**:
    - `Content-Type: application/json`
    - `Authorization: Bearer YOUR_JWT_TOKEN` (only for admin endpoints)
@@ -99,7 +99,7 @@ token = "Bearer YOUR_JWT_TOKEN"
 # Register a model
 def register_model():
     response = requests.post(
-        "http://localhost:8080/admin/models/register",
+        "http://localhost:5000/admin/models/register",
         headers={
             "Authorization": token,
             "Content-Type": "application/json"
@@ -120,7 +120,7 @@ def register_model():
 # Query models
 def query_models():
     response = requests.post(
-        "http://localhost:8080/query",
+        "http://localhost:5000/query",
         headers={"Content-Type": "application/json"},
         json={
             "model": "items",
@@ -145,7 +145,7 @@ const token = "Bearer YOUR_JWT_TOKEN";
 // Register a model
 async function registerModel() {
     try {
-        const response = await fetch("http://localhost:8080/admin/models/register", {
+        const response = await fetch("http://localhost:5000/admin/models/register", {
             method: "POST",
             headers: {
                 "Authorization": token,
@@ -174,7 +174,7 @@ async function registerModel() {
 // Query models
 async function queryModels() {
     try {
-        const response = await fetch("http://localhost:8080/query", {
+        const response = await fetch("http://localhost:5000/query", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -243,7 +243,7 @@ queryModels();
 - **Invalid JSON**: Validate your request body format
 
 ### Verification Steps
-1. Check if server is running: `curl http://localhost:8080/health` (if health endpoint exists)
+1. Check if server is running: `curl http://localhost:5000/health` (if health endpoint exists)
 2. Verify token format: Ensure it starts with "Bearer "
 3. Test with simple requests first before complex operations
 
